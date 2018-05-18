@@ -25,7 +25,7 @@ class MarkdownTransformer
         }
 
         $str = $this->markdownParser
-                ->transformMarkdown('asd'.$str);
+                ->transformMarkdown('(mW)'.$str);
         $cache->save($key, $str);
 
         return $str;

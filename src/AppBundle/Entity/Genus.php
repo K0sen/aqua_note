@@ -24,11 +24,6 @@ class Genus
     private $name;
 
     /**
-     * @ORM\Column(type="string")
-     */
-    private $subFamily;
-
-    /**
      * @ORM\Column(type="integer")
      */
     private $speciesCount;
@@ -44,6 +39,12 @@ class Genus
     private $isPublished = true;
 
     /**
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\SubFamily")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $subFamily;
+
+    /**
      * @ORM\OneToMany(targetEntity="AppBundle\Entity\GenusNote", mappedBy="genus")
      * @ORM\OrderBy({"createdAt"="DESC"})
      * @var ArrayCollection
@@ -53,6 +54,43 @@ class Genus
     public function __construct()
     {
         $this->notes = new ArrayCollection();
+    }
+
+    /**
+     * @ORM\Column(type="date")
+     */
+    private $firstDiscoveredAt;
+
+    /**
+     * @return mixed
+     */
+    public function getFirstDiscoveredAt()
+    {
+        return $this->firstDiscoveredAt;
+    }
+
+    /**
+     * @param mixed $firstDiscoveredAt
+     */
+    public function setFirstDiscoveredAt($firstDiscoveredAt)
+    {
+        $this->firstDiscoveredAt = $firstDiscoveredAt;
+    }
+
+    /**
+     * @return subFamily
+     */
+    public function getSubFamily()
+    {
+        return $this->subFamily;
+    }
+
+    /**
+     * @param mixed $subFamily
+     */
+    public function setSubFamily(SubFamily $subFamily = null)
+    {
+        $this->subFamily = $subFamily;
     }
 
     /**
@@ -85,29 +123,6 @@ class Genus
     public function setName($name)
     {
         $this->name = $name;
-        return $this;
-    }
-
-    /**
-     * Gets SubFamily.
-     *
-     * @return mixed
-     */
-    public function getSubFamily()
-    {
-        return $this->subFamily;
-    }
-
-    /**
-     * Sets SubFamily.
-     *
-     * @param mixed $subFamily
-     *
-     * @return Genus
-     */
-    public function setSubFamily($subFamily)
-    {
-        $this->subFamily = $subFamily;
         return $this;
     }
 
@@ -160,6 +175,16 @@ class Genus
     public function getUpdatedAt()
     {
         return new \DateTime('-'.rand(0, 100).'days');
+    }
+
+    /**
+     * Gets isPublished.
+     *
+     * @return mixed
+     */
+    public function getisPublished()
+    {
+        return $this->isPublished;
     }
 
     /**
