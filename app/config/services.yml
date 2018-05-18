@@ -34,16 +34,17 @@ services:
     #     arguments:
     #         $someArgument: 'some_value'
 
+    Doctrine\Common\Cache\Cache: '@doctrine_cache.providers.my_markdown_cache'
+
     app.markdown_transformer:
         public: true
         class: AppBundle\Services\MarkdownTransformer
-#        arguments: ['@markdown.parser', '@doctrine_cache.providers.my_markdown_cache']
-        arguments: ['@markdown.parser']
+#        arguments: ['@markdown.parser']
+        arguments: ['@markdown.parser', '@doctrine_cache.providers.my_markdown_cache']
 
-#    #TODO
-#    app.markdown_extension:
-#        class: AppBundle\Twig\MarkdownExtension
-#        tags:
-#            - { name: twig.extension }
-##        arguments: ['@app.markdown_transformer']
-#        autowire: true
+    app.markdown_extension:
+        class: AppBundle\Twig\MarkdownExtension
+        tags:
+            - { name: twig.extension }
+#        arguments: ['@app.markdown_transformer']
+        autowire: true

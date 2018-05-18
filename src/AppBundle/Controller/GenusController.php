@@ -70,16 +70,19 @@ class GenusController extends Controller
 //        $cache = $this->get('doctrine_cache.providers.my_markdown_cache');
 //        $transformer = new MarkdownTransformer($mt, $cache);
 //        $funFact = $transformer->parse($genus->getFunFact());
+
+
         $transformer = $this->get('app.markdown_transformer');
         $funFact = $transformer->parse($genus->getFunFact());
 
+//        $funFact = $genus->getFunFact();
 //        $cache = $this->container->get('doctrine_cache.providers.my_markdown_cache');
 //        $key = md5($funFact);
 //
 //        if ($cache->contains($key)) {
 //            $funFact = $cache->fetch($key);
 //        } else {
-//            sleep(4);
+//            sleep(2);
 //            $funFact = $this->get('markdown.parser')
 //                ->transform($funFact);
 //            $cache->save($key, $funFact);
