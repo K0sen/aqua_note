@@ -5,10 +5,12 @@ namespace AppBundle\Controller\Admin;
 use AppBundle\Entity\Genus;
 use AppBundle\Form\GenusFormType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
+ * @Security("is_granted('ROLE_MANAGE_GENUS')")
  * @Route("/admin")
  */
 class GenusAdminController extends Controller
@@ -27,12 +29,12 @@ class GenusAdminController extends Controller
         ));
     }
 
-	/**
-	 * @Route("/genus/new", name="admin_genus_new")
-	 * @param Request $request
-	 *
-	 * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
-	 */
+    /**
+     * @Route("/genus/new", name="admin_genus_new")
+     * @param Request $request
+     *
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
+     */
     public function newAction(Request $request)
     {
         $form = $this->createForm(GenusFormType::class);
@@ -46,7 +48,9 @@ class GenusAdminController extends Controller
             $em->persist($genus);
             $em->flush();
 
-            $this->addFlash('success', 'Genus created - you are amazing');
+            $this->addFlash('success',
+                sprintf('Genus created - you (%s) are amazing', $this->getUser()->getEmail())
+            );
 
             return $this->redirectToRoute('admin_genus_list');
         }
@@ -56,29 +60,29 @@ class GenusAdminController extends Controller
         ]);
     }
 
-	/**
-	 * @Route("/genus/{id}/edit", name="admin_genus_edit")
-	 */
-	public function editAction(Request $request, Genus $genus)
-	{
-		$form = $this->createForm(GenusFormType::class, $genus);
+    /**
+     * @Route("/genus/{id}/edit", name="admin_genus_edit")
+     */
+    public function editAction(Request $request, Genus $genus)
+    {
+        $form = $this->createForm(GenusFormType::class, $genus);
 
-		// only handles data on POST
-		$form->handleRequest($request);
-		if ($form->isSubmitted() && $form->isValid()) {
-			$genus = $form->getData();
+        // only handles data on POST
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $genus = $form->getData();
 
-			$em = $this->getDoctrine()->getManager();
-			$em->persist($genus);
-			$em->flush();
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($genus);
+            $em->flush();
 
-			$this->addFlash('success', 'Genus update - you are amazing');
+            $this->addFlash('success', 'Genus update - you are amazing');
 
-			return $this->redirectToRoute('admin_genus_list');
-		}
+            return $this->redirectToRoute('admin_genus_list');
+        }
 
-		return $this->render('admin/genus/edit.html.twig', [
-			'genusForm' => $form->createView()
-		]);
-	}
+        return $this->render('admin/genus/edit.html.twig', [
+            'genusForm' => $form->createView()
+        ]);
+    }
 }
