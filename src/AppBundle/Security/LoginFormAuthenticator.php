@@ -4,8 +4,10 @@ namespace AppBundle\Security;
 
 
 use AppBundle\Form\LoginForm;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
@@ -13,43 +15,56 @@ use Symfony\Component\Security\Guard\Authenticator\AbstractFormLoginAuthenticato
 
 class LoginFormAuthenticator extends AbstractFormLoginAuthenticator
 {
-	private $formFactory;
+    private $formFactory;
+    private $em;
+    private $router;
 
-	public function __construct(FormFactoryInterface $formFactory)
-	{
-		$this->formFactory = $formFactory;
-	}
+    public function __construct(FormFactoryInterface $formFactory, EntityManagerInterface $em, RouterInterface $router)
+    {
+        $this->formFactory = $formFactory;
+        $this->em = $em;
+        $this->router = $router;
+    }
 
-	public function getCredentials( Request $request )
-	{
-		$isLoginSubmit = $request->getPathInfo() == '/login' && $request->isMethod('POST');
+    public function getCredentials( Request $request )
+    {
+        $isLoginSubmit = $request->getPathInfo() == '/login' && $request->isMethod('POST');
 
-		if (!$isLoginSubmit) {
-			// skip authentication
-			return;
-		}
+        if (!$isLoginSubmit) {
+            // skip authentication
+            return;
+        }
 
-		$form = $this->formFactory->create(LoginForm::class);
-		$form->handleRequest($request);
+        $form = $this->formFactory->create(LoginForm::class);
+        $form->handleRequest($request);
 
-		$data = $form->getData();
-		return $data;
-	}
-
-	protected function getLoginUrl()
-	{
-		// TODO: Implement getLoginUrl() method.
-	}
-
-	public function getUser( $credentials, UserProviderInterface $userProvider )
-	{
-		// TODO: Implement getUser() method.
-	}
-
-	public function checkCredentials( $credentials, UserInterface $user )
-	{
-		// TODO: Implement checkCredentials() method.
-	}
+        $data = $form->getData();
+        return $data;
+    }
 
 
+    public function getUser( $credentials, UserProviderInterface $userProvider )
+    {
+        $username = $credentials['_username'];
+
+        return $this->em->getRepository('AppBundle:User')
+            ->findOneBy(['email' => $username]);
+    }
+
+    public function checkCredentials( $credentials, UserInterface $user )
+    {
+        $password = $credentials['_password'];
+
+        return $password === '123';
+    }
+
+    protected function getLoginUrl()
+    {
+        return $this->router->generate('security_login');
+    }
+
+    public function getDefaultSuccessRedirectUrl()
+    {
+        return $this->router->generate('genus');
+    }
 }

@@ -42,6 +42,10 @@ services:
 #        arguments: ['@markdown.parser']
         arguments: ['@markdown.parser', '@doctrine_cache.providers.my_markdown_cache']
 
+    app.security.login_form_authenticator:
+        class: AppBundle\Security\LoginFormAuthenticator
+        autowire: true
+
 #    app.markdown_extension:
 #        class: AppBundle\Twig\MarkdownExtension
 #        tags:

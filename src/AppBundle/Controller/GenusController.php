@@ -40,7 +40,7 @@ class GenusController extends Controller
     }
 
     /**
-     * @Route("/genus")
+     * @Route("/genus", name="genus")
      */
     public function listAction()
     {
