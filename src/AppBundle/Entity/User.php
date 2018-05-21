@@ -11,49 +11,94 @@ use Symfony\Component\Security\Core\User\UserInterface;
  */
 class User implements UserInterface
 {
-	/**
-	 * @ORM\Id
-	 * @ORM\GeneratedValue(strategy="AUTO")
-	 * @ORM\Column(type="integer")
-	 */
-	private $id;
+    /**
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\Column(type="integer")
+     */
+    private $id;
 
-	/**
-	 * @ORM\Column(type="string", unique=true)
-	 */
-	private $email;
+    /**
+     * @ORM\Column(type="string", unique=true)
+     */
+    private $email;
 
-	public function getUsername()
-	{
-		return $this->email;
-	}
+    /**
+     * @ORM\Column(type="string")
+     */
+    private $password;
 
-	public function getRoles()
-	{
-		return ['ROLE_USER'];
-	}
+    private $plainPassword;
 
-	public function getPassword()
-	{
-		// TODO: Implement getPassword() method.
-	}
+    public function getUsername()
+    {
+        return $this->email;
+    }
 
-	public function getSalt()
-	{
-		// TODO: Implement getSalt() method.
-	}
+    public function getRoles()
+    {
+        return ['ROLE_USER'];
+    }
 
-	public function eraseCredentials()
-	{
-		// TODO: Implement eraseCredentials() method.
-	}
+    public function getPassword()
+    {
+        $this->password;
+    }
 
-	/**
-	 * @param mixed $email
-	 */
-	public function setEmail( $email )
-	{
-		$this->email = $email;
-	}
+    public function getSalt()
+    {
+        // TODO: Implement getSalt() method.
+    }
+
+    public function eraseCredentials()
+    {
+        $this->plainPassword = null;
+    }
+
+    /**
+     * @param mixed $email
+     */
+    public function setEmail( $email )
+    {
+        $this->email = $email;
+    }
+
+    /**
+     * Sets Password.
+     *
+     * @param mixed $password
+     *
+     * @return User
+     */
+    public function setPassword($password)
+    {
+        $this->password = $password;
+        return $this;
+    }
+
+    /**
+     * Gets PlainPassword.
+     *
+     * @return mixed
+     */
+    public function getPlainPassword()
+    {
+        return $this->plainPassword;
+    }
+
+    /**
+     * Sets PlainPassword.
+     *
+     * @param mixed $plainPassword
+     *
+     * @return User
+     */
+    public function setPlainPassword($plainPassword)
+    {
+        $this->plainPassword = $plainPassword;
+        // forces the object to look "dirty" to Doctrine. Avoids
+        // Doctrine *not* saving this entity, if only plainPassword changes
+        $this->password = null;
+    }
 
 }
