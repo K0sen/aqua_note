@@ -6,6 +6,7 @@ namespace AppBundle\Controller;
 use AppBundle\Entity\Genus;
 use AppBundle\Entity\GenusNote;
 use AppBundle\Services\MarkdownTransformer;
+use Psr\Log\LoggerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -56,7 +57,7 @@ class GenusController extends Controller
     /**
      * @Route("/genus/{genusName}", name="genus_show")
      */
-    public function showAction($genusName)
+    public function showAction($genusName, MarkdownTransformer $markdownTransformer, LoggerInterface $logger)
     {
         $em = $this->getDoctrine()->getManager();
         $genus = $em->getRepository('AppBundle:Genus')
@@ -66,31 +67,9 @@ class GenusController extends Controller
             throw $this->createNotFoundException('No genus found');
         }
 
-//        $mt = $this->get('markdown.parser');
-//        $cache = $this->get('doctrine_cache.providers.my_markdown_cache');
-//        $transformer = new MarkdownTransformer($mt, $cache);
-//        $funFact = $transformer->parse($genus->getFunFact());
+        $funFact = $markdownTransformer->parse($genus->getFunFact());
 
-
-        $transformer = $this->get('app.markdown_transformer');
-        $funFact = $transformer->parse($genus->getFunFact());
-
-//        $funFact = $genus->getFunFact();
-//        $cache = $this->container->get('doctrine_cache.providers.my_markdown_cache');
-//        $key = md5($funFact);
-//
-//        if ($cache->contains($key)) {
-//            $funFact = $cache->fetch($key);
-//        } else {
-//            sleep(2);
-//            $funFact = $this->get('markdown.parser')
-//                ->transform($funFact);
-//            $cache->save($key, $funFact);
-//        }
-
-        $this->get('logger')
-            ->info('Showing genus: '. $genusName);
-
+        $logger->info('Showing genus: '. $genusName);
 
         $recentNotes = $em->getRepository('AppBundle:GenusNote')
             ->findAllRecentNoteForGenus($genus);

@@ -4,21 +4,29 @@ namespace AppBundle\Controller;
 
 
 use AppBundle\Form\UserRegistrationForm;
+use AppBundle\Security\LoginFormAuthenticator;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Security\Guard\GuardAuthenticatorHandler;
 
 class UserController extends Controller
 {
     /**
      * @Route("/register", name="user_register")
+     * @param Request                   $request
+     * @param LoginFormAuthenticator    $authenticator
+     * @param GuardAuthenticatorHandler $guardAuthenticatorHandler
+     * @return null|\Symfony\Component\HttpFoundation\Response
      */
-    public function registerAction(Request $request)
+    public function registerAction(Request $request,
+                                   LoginFormAuthenticator $authenticator,
+                                   GuardAuthenticatorHandler $guardAuthenticatorHandler)
     {
         $form = $this->createForm(UserRegistrationForm::class);
 
         $form->handleRequest($request);
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $user = $form->getData();
 
             $em = $this->getDoctrine()->getManager();
@@ -27,11 +35,10 @@ class UserController extends Controller
 
             $this->addFlash('success', 'Welcome '. $user->getEmail());
 
-            return $this->get('security.authentication.guard_handler')
-                ->authenticateUserAndHandleSuccess(
+            return $guardAuthenticatorHandler->authenticateUserAndHandleSuccess(
                     $user,
                     $request,
-                    $this->get('app.security.login_form_authenticator'),
+                    $authenticator,
                     'main'
                 );
         }

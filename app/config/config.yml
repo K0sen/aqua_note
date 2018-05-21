@@ -68,4 +68,4 @@ doctrine_cache:
         my_markdown_cache:
             type: '%cache_type%'
             file_system:
-                directory: %kernel.cache_dir%/markdown_cache
+                directory: '%kernel.cache_dir%/markdown_cache'
